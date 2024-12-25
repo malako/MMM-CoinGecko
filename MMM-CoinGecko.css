@@ -1,0 +1,117 @@
+.MMM-CoinGecko * {
+  text-align: left;
+  font-weight: 100;
+}
+.MMM-CoinGecko .right {
+  text-align: right;
+}
+.MMM-CoinGecko .center {
+  text-align: center;
+}
+.MMM-CoinGecko .negative {
+  color: #FF5A44;
+}
+.MMM-CoinGecko .positive {
+  color: #A3EA80;
+}
+.MMM-CoinGecko table {
+  border-spacing: 0 0.5rem;
+}
+.MMM-CoinGecko table th {
+  font-size: 0.8rem;
+  line-height: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.MMM-CoinGecko table .sparkline_7d {
+  text-align: end;
+}
+.MMM-CoinGecko table.inline .metrics, .MMM-CoinGecko table.inline .sparkline_7d {
+  width: 1%;
+}
+.MMM-CoinGecko table.inline .inline-heading {
+  padding-left: 0.5rem;
+  padding-right: 0.3rem;
+}
+.MMM-CoinGecko table.inline .inline-heading div {
+  font-size: 0.6rem;
+  float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50% 50%;
+}
+.MMM-CoinGecko .coin td {
+  vertical-align: center;
+  color: #fff;
+}
+.MMM-CoinGecko .coin td.sparkline_7d img {
+  width: 6rem;
+  height: 1.4rem;
+}
+.MMM-CoinGecko .coin td.image-wrapper {
+  width: 2rem;
+}
+.MMM-CoinGecko .coin td.image-wrapper .image {
+  display: flex;
+  align-items: center;
+}
+.MMM-CoinGecko .coin td.image-wrapper .image img {
+  width: 1.5rem;
+  height: auto;
+}
+.MMM-CoinGecko .coin td.image-wrapper .image img.gray {
+  filter: grayscale(100%);
+}
+.MMM-CoinGecko .coin td.name {
+  font-size: 1rem;
+}
+.MMM-CoinGecko .coin td.current {
+  vertical-align: center;
+  white-space: nowrap;
+}
+.MMM-CoinGecko .coin td.current .current-price {
+  font-size: 1;
+  line-height: 1.1;
+  text-align: right;
+  white-space: nowrap;
+}
+.MMM-CoinGecko .coin td.current .holdings-value {
+  font-size: 0.7rem;
+  line-height: 0.77rem;
+  text-align: right;
+  opacity: 0.6;
+}
+.MMM-CoinGecko .coin td.price {
+  font-size: 1rem;
+}
+.MMM-CoinGecko .coin td.metrics {
+  white-space: nowrap;
+}
+.MMM-CoinGecko .coin td.metrics .price {
+  font-size: 1rem;
+  line-height: 1.1rem;
+}
+.MMM-CoinGecko .coin td.metrics .currency {
+  font-size: 1rem;
+  line-height: 1.1rem;
+}
+.MMM-CoinGecko .coin td.metrics .percentage {
+  font-size: 0.7rem;
+  line-height: 0.77rem;
+  opacity: 0.6;
+}
+.MMM-CoinGecko .total-holdings td {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.MMM-CoinGecko .total-holdings td.total-holdings-current {
+  font-weight: 400;
+  color: #fff;
+}/*# sourceMappingURL=MMM-CoinGecko.css.map */

@@ -1,0 +1,24 @@
+{
+  "name": "mmm-coingecko",
+  "version": "1.0.0",
+  "description": "A MagicMirror² module that displays crypto data from CoinGecko.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/malako/MMM-CoinGecko"
+  },
+  "keywords": [
+    "smart mirror",
+    "magicmirror",
+    "mirror",
+    "module",
+    "crypto currency",
+    "coingecko",
+    "bitcoin"
+  ],
+  "author": "Marcus Renheim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/malako/MMM-CoinGecko/issues"
+  },
+  "homepage": "https://github.com/malako/MMM-CoinGecko#readme"
+}

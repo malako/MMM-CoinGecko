@@ -1,0 +1,13 @@
+{
+  "column-1h": "1h",
+  "column-24h": "24h",
+  "column-7d": "7d",
+  "column-sparkline_7d": "7d",
+  "column-14d": "14d",
+  "column-30d": "30d",
+  "column-60d": "60d",
+  "column-200d": "200d",
+  "column-1y": "1y",
+  "currency": "Currency",
+  "price": "Price"
+}

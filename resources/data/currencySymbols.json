@@ -1,0 +1,54 @@
+{
+  "usd": {
+    "prefix": "$",
+    "suffix": null
+  },
+  "eur": {
+    "prefix": "€",
+    "suffix": null
+  },
+  "gbp": {
+    "prefix": "£",
+    "suffix": null
+  },
+  "jpy": {
+    "prefix": "¥",
+    "suffix": null
+  },
+  "cny": {
+    "prefix": "¥",
+    "suffix": null
+  },
+  "krw": {
+    "prefix": "₩",
+    "suffix": null
+  },
+  "inr": {
+    "prefix": "₹",
+    "suffix": null
+  },
+  "aud": {
+    "prefix": "$",
+    "suffix": null
+  },
+  "nzd": {
+    "prefix": "$",
+    "suffix": null
+  },
+  "cad": {
+    "prefix": "$",
+    "suffix": null
+  },
+  "sek": {
+    "prefix": null,
+    "suffix": " kr"
+  },
+  "nok": {
+    "prefix": null,
+    "suffix": " kr"
+  },
+  "dkk": {
+    "prefix": null,
+    "suffix": " kr"
+  }
+}

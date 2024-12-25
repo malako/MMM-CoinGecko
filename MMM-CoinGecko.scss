@@ -1,0 +1,153 @@
+.MMM-CoinGecko {
+  $border: 1px solid rgba(255, 255, 255, 0.2);
+  $title-font-size: 1;
+  $coin-name-font-size: 1rem;  
+  $coin-value-font-size: 1rem;
+  $sub-title-font-size: 0.7rem;
+  $sub-title-opacity: 0.6;
+  $line-height-multiplier: 1.1;
+  
+  * {
+    text-align: left;
+    font-weight: 100;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .negative { color: #FF5A44; }
+  .positive { color: #A3EA80; }
+
+  table {
+    border-spacing: 0 0.5rem;
+    th {
+      font-size: 0.8rem;
+      line-height: 1rem;
+      border-bottom: $border;
+    }
+
+    .sparkline_7d {
+      text-align: end;
+    }
+
+    &.inline {
+      .metrics, .sparkline_7d {
+        width: 1%;
+      }
+      .inline-heading {
+        padding-left: 0.5rem;
+        padding-right: 0.3rem;
+        div {
+          font-size: 0.6rem;
+          float: right;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          opacity: 0.8;
+          width: 1.2rem;
+          height: 1.2rem;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 50% 50%;
+        }
+      }
+    }
+  }
+
+  .coin {
+    td {
+      vertical-align: center;
+      color: #fff;
+
+      &.sparkline_7d {
+        img {
+          width: 6rem;
+          height: 1.4rem;
+        }
+      }
+
+      &.image-wrapper {
+        width: 2rem;
+        .image {
+          display: flex;
+          align-items: center;
+
+          img {
+            width: 1.5rem;
+            height: auto;
+
+            &.gray {
+              filter: grayscale(100%);
+            }
+          }
+        }
+      }
+
+      &.name {
+        font-size: $coin-name-font-size;
+      }
+
+      &.current {
+        vertical-align: center;
+        white-space: nowrap;
+
+        .current-price {
+          font-size: $title-font-size;
+          line-height: $title-font-size * $line-height-multiplier;
+          text-align: right;
+          white-space: nowrap;
+        }
+
+        .holdings-value {
+          font-size: $sub-title-font-size;
+          line-height: $sub-title-font-size * $line-height-multiplier;
+          text-align: right;
+          opacity: $sub-title-opacity;
+        }
+      }
+
+      &.price {
+        font-size: $coin-name-font-size;
+      }
+
+      &.metrics {
+        white-space: nowrap;
+
+        .price {
+          font-size: $coin-value-font-size;
+          line-height: $coin-value-font-size * $line-height-multiplier;
+        }
+
+        .currency {
+          font-size: $coin-value-font-size;
+          line-height: $coin-value-font-size * $line-height-multiplier;
+        }
+
+        .percentage {
+          font-size: $sub-title-font-size;
+          line-height: $sub-title-font-size * $line-height-multiplier;
+          opacity: $sub-title-opacity;
+        }
+      }
+    }
+  }
+
+  .total-holdings {
+    td {
+      border-top: $border;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: $coin-name-font-size;
+      white-space: nowrap;
+      overflow: hidden;
+
+      &.total-holdings-current {
+        font-weight: 400;
+        color: #fff;
+      }
+    }
+  }
+}

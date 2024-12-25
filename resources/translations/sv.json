@@ -1,0 +1,13 @@
+{
+  "column1h": "1t",
+  "column24h": "24t",
+  "column7d": "7d",
+  "sparkline7d": "7d",
+  "column14d": "14d",
+  "column30d": "30d",
+  "column60d": "60d",
+  "column200d": "200d",
+  "column1y": "1 år",
+  "currency": "Valuta",
+  "price": "Pris"
+}
