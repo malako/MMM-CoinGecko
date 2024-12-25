@@ -4,7 +4,7 @@ MMM-CoinGecko is a [MagicMirror²](https://github.com/MichMich/MagicMirror/) mod
 ![Screenshot of MMM-CoinGecko](images/screenshot.png?raw=true "Example screenshot")
 
 ## About
-This module uses CoinGecko's public API to fetch crypto data. Read more about the API at [Public API users (Demo plan)](https://docs.coingecko.com/v3.0.1/reference/introduction).
+This module uses CoinGecko's public API to fetch crypto data. Read more about the API at [Public API users (Demo plan)](https://docs.coingecko.com/v3.0.1/reference/introduction).git 
 
 You can also add your holdings to display the value in selected currency per coin/token, and also as a total bottom line.
 
@@ -54,6 +54,6 @@ Some options have default settings to get you up and running quickly.
 | `holdings` |  `{ 'bitcoin': 0.5, 'ethereum': 1, 'solana': 1.5 }` | Your coin holdings.<br /><br />**Required if you want to to use `displayHoldings` and `displayTotalHoldings`**. |
 
 ## Improvements?
-Feel free to add suggestions in [issues](https://github.com/malako/MMM-CoinGecko/issues).
+Feel free to add issues and suggestions in [issues](https://github.com/malako/MMM-CoinGecko/issues).
 
 You can find the change log [here](https://github.com/malako/MMM-CoinGecko/blob/master/CHANGELOG.md).
