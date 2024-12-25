@@ -11,7 +11,7 @@ You can also add your holdings to display the value in selected currency per coi
 ## Get started
 
 ### API key
-1. Log in to and navigate to [developer's dashboard](https://www.coingecko.com/en/developers/dashboard).
+1. Log in to and navigate to [CoinGecko's developer dashboard](https://www.coingecko.com/en/developers/dashboard).
 
 2. Create an API key and copy it
 
@@ -57,3 +57,5 @@ Some options have default settings to get you up and running quickly.
 Feel free to add issues and suggestions in [issues](https://github.com/malako/MMM-CoinGecko/issues).
 
 You can find the change log [here](https://github.com/malako/MMM-CoinGecko/blob/master/CHANGELOG.md).
+
+/Malako
