@@ -9,5 +9,6 @@
   "column-200d": "200d",
   "column-1y": "1y",
   "currency": "Currency",
-  "price": "Price"
+  "price": "Price",
+  "total": "Total"
 }

@@ -127,7 +127,7 @@ Module.register("MMM-CoinGecko", {
 		if (this.config.displayHoldings && this.config.displayTotalHoldings) {
 			html += `
 			<tr class="total-holdings">
-				<td colspan="2">Total</td>
+				<td colspan="2">${this.translate('total')}</td>
 				<td class="right total-holdings-current"></td>`
 			for (column of this.config.columns) {
 				if (this.config.headingType === 'inline') {
