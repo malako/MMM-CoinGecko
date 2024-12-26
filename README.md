@@ -17,7 +17,7 @@ You can also add your holdings to display the value in selected currency per coi
 
 2. Log in to and navigate to [CoinGecko's developer dashboard](https://www.coingecko.com/en/developers/dashboard).
 
-3. Create an API key and copy it
+3. Create an API key and copy it.
 
 ### Add MMM-CoinGecko to config.js
 
@@ -69,5 +69,7 @@ Example: If you list four coins with `plan: 'demo'` and `fetchInterval: -1`, dat
 Feel free to add issues and suggestions in [issues](https://github.com/malako/MMM-CoinGecko/issues).
 
 You can find the change log [here](https://github.com/malako/MMM-CoinGecko/blob/master/CHANGELOG.md).
+
+Please star if you like it! :)
 
 /Malako
