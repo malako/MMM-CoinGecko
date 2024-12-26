@@ -61,7 +61,7 @@ Some options have default settings to get you up and running quickly.
 ## CoinGecko API plans
 Demo API allows 10000 requests/month and each coin requires a separate call.
 
-If you are on a paid CoinGecko plan, change the `plan` option to your plan. Keeping `fetchInterval` set to auto (`-1`) will calculate the appropriate interval so you don't run out of credits.
+If you are on a paid CoinGecko plan, change the `plan` option to your active plan. Keeping `fetchInterval` set to auto (`-1`) will calculate the appropriate interval so you don't run out of credits.
 
 Example: If you list four coins with `plan: 'demo'` and `fetchInterval: -1`, data will be updated every ~20 min. 
 
