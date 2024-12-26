@@ -272,21 +272,68 @@ Module.register("MMM-CoinGecko", {
 		const responses = await Promise.all(promises)
 
 		for (const response of responses) {
-			this.coinsCallback(response)
+			if (!response.ok) {
+				Log.error('Error in coinsCallback response', response)
+				return
+			}
+
+			this.displayCoinData(response.data)
+		}
+		if (this.config.displayHoldings && this.config.displayTotalHoldings) {
+			this.displayTotalHoldings(responses.map(response => response.data))
+		}
+		setTimeout(() => { this.getCoinsData() }, this.config.fetchInterval)
+	},
+
+	displayTotalHoldings (dataArray) {
+		const sums = []
+		sums['current'] = 0
+
+		// Initiate holdings
+		for (const column of this.config.columns) {
+			sums[column] = 0
+		}
+
+		for (const data of dataArray) {
+			sums['current'] += data.market_data.current_price[this.config.currency] * this.config.holdings[data.id]
+			for (const column of this.config.columns) {
+				if (column === 'sparkline_7d') {
+					continue
+				}
+				const changeInPercent = parseFloat(data.market_data[`price_change_percentage_${column}_in_currency`][this.config.currency])
+				if (!isNaN(changeInPercent)) {
+					const priceAtTime = data.market_data.current_price[this.config.currency] / (1 + changeInPercent / 100)
+					sums[column] += priceAtTime * this.config.holdings[data.id]
+				}
+			}
+		}
+		
+		const numberFormatOptions = { 
+			thousandsSeparator: this.config.thousandsSeparator,
+			decimalSeparator: this.config.decimalSeparator,
+			plusMinusSign: false,
+			numberOfDecimals: this.config.numberOfDecimals,
+			prefix: this.currencySymbol.prefix,
+			suffix: this.currencySymbol.suffix
+		}
+	
+		const totalsRow = this.getWrapper().querySelector('.total-holdings')
+		totalsRow.querySelector('.total-holdings-current').innerHTML = getValueFormatted(sums['current'], numberFormatOptions)
+
+		for (let column of this.config.columns) {
+			if (column === 'sparkline_7d') {
+				sums['sparkline_7d'] = sums['7d']
+			}
+			totalsRow.querySelector(`.total-holdings-${column}`).innerHTML = getValueFormatted(sums[column], numberFormatOptions)
 		}
 	},
 
-	coinsCallback (response) {
-		if (!response.ok) {
-			Log.error('Error in coinsCallback response', response)
-			return
-		}
-
-		const coinId = response.data.id
+	displayCoinData (data) {
+		const coinId = data.id
 		const row = this.getWrapper().querySelector(`.${coinId}`)
 
-		row.querySelector('.image').innerHTML = `<img src="${response.data.image.large}" class="${this.config.grayScaleSymbols ? 'gray' : 'color'}" />`
-		row.querySelector('.name').innerHTML = response.data.name
+		row.querySelector('.image').innerHTML = `<img src="${data.image.large}" class="${this.config.grayScaleSymbols ? 'gray' : 'color'}" />`
+		row.querySelector('.name').innerHTML = data.name
 
 		if (!this.currencySymbol) {
 			this.currencySymbol = { prefix: null, suffix: null }
@@ -302,7 +349,7 @@ Module.register("MMM-CoinGecko", {
 		}
 
 		// Set current price
-		currentPrice = parseFloat(response.data.market_data.current_price[this.config.currency])
+		currentPrice = parseFloat(data.market_data.current_price[this.config.currency])
 
 		if (this.config.displayHoldings) {
 			row.querySelector('.holdings-value').innerHTML = getValueFormatted(this.config.holdings[coinId] * currentPrice, numberFormatOptions)	
@@ -313,12 +360,12 @@ Module.register("MMM-CoinGecko", {
 		for (column of this.config.columns) {
 			if (column === 'sparkline_7d') {
 				// Extract numerical coin id from image url
-				const numericalCoinId = response.data.image.large.replace('https://coin-images.coingecko.com/coins/images/', '').split('/')[0]
+				const numericalCoinId = data.image.large.replace('https://coin-images.coingecko.com/coins/images/', '').split('/')[0]
 				const sparklineUrl = `https://www.coingecko.com/coins/${numericalCoinId}/sparkline.svg`
 				row.querySelector('.sparkline_7d').innerHTML = `<img src="${sparklineUrl}" />`
 			}
 			else {
-				const changeInPercent = parseFloat(response.data.market_data[`price_change_percentage_${column}_in_currency`][this.config.currency])
+				const changeInPercent = parseFloat(data.market_data[`price_change_percentage_${column}_in_currency`][this.config.currency])
 
 				if (!isNaN(changeInPercent)) {
 					const priceAtTime = currentPrice / (1 + changeInPercent / 100)
@@ -349,6 +396,7 @@ Module.register("MMM-CoinGecko", {
 			}
 		}
 	},
+
 	//#endregion
 
 	//#region Helpers
