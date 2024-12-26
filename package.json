@@ -1,6 +1,6 @@
 {
   "name": "mmm-coingecko",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A MagicMirror² module that displays crypto data from CoinGecko.",
   "repository": {
     "type": "git",
