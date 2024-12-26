@@ -4,66 +4,40 @@ const express = require("express")
 const Log = require("logger")
 
 module.exports = NodeHelper.create({
-  notifications: {
-    GET_JSON: 'GET_JSON',
-    GET_JSONS: 'GET_JSONS',
-    INVALID_NOTIFICATION_TYPE: 'INVALID_NOTIFICATION_TYPE',
-    ERROR: 'ERROR'
-  },
-
-  async socketNotificationReceived (notification, payload) {
-    try {
-      switch (notification) {
-        case this.notifications.GET_JSON:
-          const response = await this.getJson(payload)
-          this.sendSocketNotification(this.notifications.GET_JSON, response)
-          break
-
-        case this.notifications.GET_JSONS:
-          const responses = await this.getJsons(payload)
-          this.sendSocketNotification(this.notifications.GET_JSONS, responses)
-          break          
-  
-        default:
-          this.sendSocketNotification(notification.INVALID_NOTIFICATION_TYPE, { message: notification })
-      }
-    }
-    catch (error) {
-      Log.error(error)
-      this.sendSocketNotification(this.notifications.ERROR, { 
-        notification,
-        error 
-      })
-    }
-  },
-
-  start () {
+  async start () {
     Log.info(`Starting module: ${this.name}`)
 
     try {
       this.expressApp.use(
         "/" + this.name + "/resources",
         express.static(this.path + "/resources")
-      );
-      Log.info('/resources configured');
+      )
+      Log.info('/resources configured')
 
-    } catch (error) {
+      this.expressApp.get(`/${this.name}/get-json`, async (req, res) => {
+        request = await JSON.parse(req.query.request)
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(await this.getJson(request)))
+      })
+      Log.info('/get-info configured')
+    }
+    catch (error) {
       Log.error(error);
     }
   },
 
-  get: async function (payload) {
-    return await fetch(payload.url, {
+  get: async function (request) {
+    return await fetch(request.url, {
       method: 'GET',
-      headers: payload.headers
+      headers: request.headers
     })  
   },
 
-  getJson: async function (payload) {
+  getJson: async function (request) {
     let clientResponse, apiResponse
 
     try {
-      apiResponse = await this.get(payload)
+      apiResponse = await this.get(request)
       json = await apiResponse.json()
 
       if (!apiResponse.ok) {
@@ -80,15 +54,6 @@ module.exports = NodeHelper.create({
       clientResponse = { ok: false, data: error }
     }
 
-    return Object.assign(clientResponse, { endpoint: payload.endpoint })
-  },
-
-  getJsons: async function (payload) {
-    const responses = await Promise.all(payload.urls.map(async (url) => {
-      return await this.getJson({ url, headers: payload.headers, endpoint: payload.endpoint })
-    }))
-
-    return Object.assign(responses)
-  },
+    return clientResponse
+  }
 });
-

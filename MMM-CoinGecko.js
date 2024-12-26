@@ -1,8 +1,9 @@
-// MMM-CoinGecko module
+// MMM-CoinGecko.js
 Module.register("MMM-CoinGecko", {
 	// Module config defaults. See https://github.com/malako/MMM-CoinGecko#readme for information.
 	defaults: {
 		apiKey: null, // Your API key. See https://docs.coingecko.com/reference/setting-up-your-api-key
+		plan: 'demo', // 'demo' for free plan or 'pro' for paid plan
 		coinIds: ['bitcoin', 'ethereum', 'solana'], // CoinGecko coin IDs. Copy from URL or see complete list: https://docs.coingecko.com/v3.0.1/reference/coins-list
 		currency: 'usd', // Currency to display the values in
 		thousandsSeparator: ',',
@@ -10,7 +11,7 @@ Module.register("MMM-CoinGecko", {
 		numberOfDecimals: -1, // Number of decimals to display. -1 for auto
 		grayScaleSymbols: false, // Gray coin coin symbols
 		columns: ['1h', '24h', '7d', 'sparkline_7d', '30d', '1y'], // Available columns: 1h, 24h, 7d, sparkline_7d, 14d, 30d, 60d, 200d, 1y
-		fetchInterval: 10 * 1000, // Fetch interval in ms
+		fetchInterval: -1, // Fetch interval in ms. Free API has a limit of 10000 requests per month
 		headingType: 'inline', // inline, top, none
 		displayHoldings: true, // Displays holdings
 		displayTotalHoldings: true, // Displays total holdings, only applicable if displayHoldings is true
@@ -27,31 +28,26 @@ Module.register("MMM-CoinGecko", {
 		},
 	},
 
-	constants: {
-		apiHost: 'https://api.coingecko.com/api/v3',
-		headers: {
-			'Content-Type': 'application/json',
-			'x-cg-demo-api-key': null			
-		},
-		endpoints: {
-			coins: '/coins'
-		},
+	api: {
+		baseUrl: null,
+		keyHeaderName: null,
+		endpoint: '/coins',
+		params: { 
+			market_data: true,
+			community_data: false,
+			developer_data: false,
+			sparkline: false
+		}
 	},
 	
-	notifications: {
-		GET_JSON: 'GET_JSON',
-		GET_JSONS: 'GET_JSONS',
-		INVALID_NOTIFICATION_TYPE: 'INVALID_NOTIFICATION_TYPE',
-		ERROR: 'ERROR'
-	},
-
 	currencySymbol: null,
 	resources: { },
 
 	//#region MM overrides
 	async start () {
-		Log.info('Starting module: ' + this.name)
-		this.constants.headers['x-cg-demo-api-key'] = this.config.apiKey
+		Log.info(`Starting module: ${this.name}`)
+		this.setApiConfig()
+		this.setFetchInterval()
 		await this.getResources()
 		this.currencySymbol = this.resources.currencySymbols[this.config.currency]
 		this.getCoinsData()
@@ -149,6 +145,63 @@ Module.register("MMM-CoinGecko", {
 	},
 	//#endregion
 
+	//#region Initialization
+	setApiConfig () {
+		switch (this.config.plan) {
+			case 'demo':
+				this.api.keyHeaderName = 'x-cg-demo-api-key'
+				this.api.baseUrl = 'https://api.coingecko.com/api/v3'
+				break
+			
+			case 'analyst':
+			case 'lite':
+			case 'pro':
+			case 'enterprise':
+				this.api.keyHeaderName = 'x-cg-pro-api-key'
+				this.api.baseUrl = 'https://pro-api.coingecko.com/api/v3'
+				break
+
+			default:
+				Log.error(`Invalid plan: ${this.config.plan}`)
+		}
+	},
+
+	setFetchInterval () {
+		if (this.config.fetchInterval === -1) {
+			const millisecondsPerMonth = 31 * 24 * 60 * 60 * 1000
+			const buffer = 1.2 // 20% buffer to not exceed the API limit
+			let requestsPerMonth
+
+			switch (this.config.plan) {
+				case 'demo':
+					requestsPerMonth = 10000 // 10k requests per month
+					break
+				
+				case 'analyst':
+					requestsPerMonth = 500000 // 500k requests per month
+					break
+
+				case 'lite':
+					requestsPerMonth = 2000000 // 2m requests per month
+					break
+
+				case 'pro':
+				case 'enterprise':
+					requestsPerMonth = 5000000 // 5m requests per month
+					break
+	
+				default:
+					Log.error(`Invalid plan: ${this.config.plan}`)
+			}
+			this.config.fetchInterval = millisecondsPerMonth / requestsPerMonth * this.config.coinIds.length * buffer
+			Log.info('Calculated fetchInterval:', this.convertMillisecondsToReadable(this.config.fetchInterval))
+		}
+		else {
+			Log.info('Static fetchInterval:', convertMillisecondsToReadable(this.config.fetchInterval))
+		}
+	},
+	//#endregion
+
 	//#region DOM manipulation
 	getWrapper () {
 		return document.getElementById(this.identifier).querySelector('.wrapper')
@@ -209,43 +262,17 @@ Module.register("MMM-CoinGecko", {
 		return Promise.all(promises)
 	},
 
-	getCoinsData () {
-		params = { 
-			market_data: true,
-			community_data: false,
-			developer_data: false,
-			sparkline: false
-		}
-
-		const urls = []
-
-		for (const coinId of this.config.coinIds) {
-			urls.push(this.urlBuilder(`${this.constants.endpoints.coins}/${coinId}`, params))
-		}
-
-		this.sendSocketNotification(this.notifications.GET_JSONS, { 
-			headers: this.constants.headers,
-			urls: urls,
-			endpoint: this.constants.endpoints.coins
+	async getCoinsData () {
+		const urls = this.config.coinIds.map(coinId => this.urlBuilder(`${this.api.baseUrl}${this.api.endpoint}/${coinId}`, this.api.params))
+		const promises = urls.map(async url => { 
+			const response = await fetch(url)
+			return response.json()
 		})
-	},
 
-	socketNotificationReceived: function (notification, payload) {
-		switch (notification) {
-			case this.notifications.GET_JSONS:
-				this.getJsonsCallback(payload)
-				break
+		const responses = await Promise.all(promises)
 
-			case this.notifications.INVALID_NOTIFICATION_TYPE:
-				Log.error(`Invalid notification type: ${notification}`)
-				break
-
-			case this.notifications.ERROR:
-				Log.error(`${payload.notification} ERROR:`, payload.error)
-				break
-
-			default:
-				Log.error(`THiS bE iMPOSSiBRU!: ${payload.notification}`)
+		for (const response of responses) {
+			this.coinsCallback(response)
 		}
 	},
 
@@ -322,81 +349,32 @@ Module.register("MMM-CoinGecko", {
 			}
 		}
 	},
-
-	getJsonCallback: function (response) {
-		if (!response.ok) {
-			Log.error('Error in getJsonCallback', response)
-			return
-		}
-
-		switch (response.endpoint) {
-			case this.constants.endpoints.coins:
-				this.coinsCallback(response)
-				break
-
-			default:
-				Log.error(`Unknown endpoint: ${response.endpoint}`)
-		}
-	},
-
-	getJsonsCallback: function (responses) {
-		const sums = []
-		sums['current'] = 0
-
-		// Initiate holdings
-		for (const column of this.config.columns) {
-			sums[column] = 0
-		}
-
-		for (const response of responses) {
-			this.getJsonCallback(response)
-			if (this.config.displayHoldings && this.config.displayTotalHoldings) {
-				sums['current'] += response.data.market_data.current_price[this.config.currency] * this.config.holdings[response.data.id]
-				for (const column of this.config.columns) {
-					if (column === 'sparkline_7d') {
-						continue
-					}
-					const changeInPercent = parseFloat(response.data.market_data[`price_change_percentage_${column}_in_currency`][this.config.currency])
-					if (!isNaN(changeInPercent)) {
-						const priceAtTime = response.data.market_data.current_price[this.config.currency] / (1 + changeInPercent / 100)
-						sums[column] += priceAtTime * this.config.holdings[response.data.id]
-					}
-				}
-			}
-		}
-
-		if (this.config.displayHoldings && this.config.displayTotalHoldings) {
-			const numberFormatOptions = { 
-				thousandsSeparator: this.config.thousandsSeparator,
-				decimalSeparator: this.config.decimalSeparator,
-				plusMinusSign: false,
-				numberOfDecimals: this.config.numberOfDecimals,
-				prefix: this.currencySymbol.prefix,
-				suffix: this.currencySymbol.suffix
-			}
-	
-			const totalsRow = this.getWrapper().querySelector('.total-holdings')
-			totalsRow.querySelector('.total-holdings-current').innerHTML = getValueFormatted(sums['current'], numberFormatOptions)
-
-			for (let column of this.config.columns) {
-				if (column === 'sparkline_7d') {
-					sums['sparkline_7d'] = sums['7d']
-				}
-				totalsRow.querySelector(`.total-holdings-${column}`).innerHTML = getValueFormatted(sums[column], numberFormatOptions)
-			}
-			setTimeout(() => { this.getCoinsData() }, this.config.fetchInterval)
-		}
-	},	
 	//#endregion
 
 	//#region Helpers
-	urlBuilder (endpoint, options) {
-		let ret = `${this.constants.apiHost}${endpoint}`
+	convertMillisecondsToReadable(ms) {
+		const minutes = parseInt(ms / 1000 / 60)
+		const seconds = parseInt(ms / 1000 % 60)
+		const milliseconds = ms % 1000
+		return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s ${milliseconds.toFixed(0)}ms`
+	},
 
-		if (options) {
-			const urlEncodedParams = Object.entries(options).map(([key, val]) => `${key}=${encodeURIComponent(val)}`).join('&')
-			ret += `?${urlEncodedParams}`
+	urlBuilder (url, params) {
+		const reqUrl = `/${this.name}/get-json`
+		
+		const headers = {
+			[this.api.keyHeaderName]: this.config.apiKey,
+			'Content-Type': 'application/json'
 		}
+
+		url = url += `?${Object.entries(params).map(([key, val]) => `${key}=${encodeURIComponent(val)}`).join('&')}`
+
+		const request = {
+			url,
+			headers,
+		}
+
+		let ret = `${reqUrl}?request=${ encodeURIComponent(JSON.stringify(request)) }`
 
 		return ret
 	},
