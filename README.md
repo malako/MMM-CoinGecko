@@ -11,7 +11,7 @@ You can also add your holdings to display the value in selected currency per coi
 ## Get started
 
 ### API key
-1. Sign up for an CoinGecko API plan at [CoinGecko Crypto Data API Plans](https://www.coingecko.com/en/api/pricing).
+1. Sign up for an CoinGecko API plan at [CoinGecko Crypto Data API Plans](https://www.coingecko.com/en/api/pricing). You can sign up for a free demo plan:
 
 ![CoinGecko API plan](images/api-step-1.png?raw=true "CoinGecko API plan")
 
