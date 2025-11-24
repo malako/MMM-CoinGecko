@@ -263,26 +263,31 @@ Module.register("MMM-CoinGecko", {
 	},
 
 	async getCoinsData () {
-		const urls = this.config.coinIds.map(coinId => this.urlBuilder(`${this.api.baseUrl}${this.api.endpoint}/${coinId}`, this.api.params))
-		const promises = urls.map(async url => { 
-			const response = await fetch(url)
-			return response.json()
-		})
-
-		const responses = await Promise.all(promises)
-
-		for (const response of responses) {
-			if (!response.ok) {
-				Log.error('Error in coinsCallback response', response)
-				return
+		try {
+			const urls = this.config.coinIds.map(coinId => this.urlBuilder(`${this.api.baseUrl}${this.api.endpoint}/${coinId}`, this.api.params))
+			const promises = urls.map(async url => { 
+				const response = await fetch(url)
+				return response.json()
+			})
+	
+			const responses = await Promise.all(promises)
+	
+			for (const response of responses) {
+				if (!response || !response.data) {
+					Log.error('Error in coinsCallback response', response)
+					continue
+				}
+	
+				this.displayCoinData(response.data)
 			}
-
-			this.displayCoinData(response.data)
+			if (this.config.displayHoldings && this.config.displayTotalHoldings) {
+				this.displayTotalHoldings(responses.map(response => response.data))
+			}
+		} catch (error) {
+			Log.error("Unhandled error in getCoinsData", error)
+		} finally {
+			setTimeout(() => { this.getCoinsData() }, this.config.fetchInterval)
 		}
-		if (this.config.displayHoldings && this.config.displayTotalHoldings) {
-			this.displayTotalHoldings(responses.map(response => response.data))
-		}
-		setTimeout(() => { this.getCoinsData() }, this.config.fetchInterval)
 	},
 
 	displayTotalHoldings (dataArray) {
